@@ -1,0 +1,52 @@
+name: Deploy SAM Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install AWS SAM CLI
+        run: |
+          pip install aws-sam-cli
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Check Required Files
+        run: |
+          if [ ! -d "oppgave-1-2024" ]; then
+            echo "Required directory oppgave-1-2024 is missing!"
+            exit 1
+          fi
+          if [ ! -f "oppgave-1-2024/template.yaml" ]; then
+            echo "Required template.yaml file is missing in oppgave-1-2024 directory!"
+            exit 1
+          fi
+
+      - name: Deploy SAM Application
+        working-directory: oppgave-1-2024
+        run: |
+          sam build
+          sam deploy --no-confirm-changeset --stack-name oppgave-1-2024 --capabilities CAPABILITY_IAM
+
+      - name: Confirm Deployment Success
+        run: |
+          aws cloudformation describe-stacks --stack-name oppgave-1-2024 --region eu-west-1 \
+          | grep -q '"StackStatus": "CREATE_COMPLETE"' || (echo "Stack creation failed" && exit 1)

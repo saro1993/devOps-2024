@@ -1,0 +1,26 @@
+# Terraform-mapper og filer
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.backup
+
+# Kompilerte Python-filer
+__pycache__/
+*.py[cod]
+
+# ZIP og binære filer
+*.zip
+
+# Binærfiler for Terraform
+terraform_*.zip
+
+# Diverse genererte filer
+*.log
+.DS_Store
+
+# Ignorer alt i AWS Cloud9 metadata (dersom du ikke trenger det)
+.c9/
+
+# Midlertidige filer
+*.tmp
