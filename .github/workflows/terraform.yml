@@ -50,13 +50,6 @@ jobs:
         working-directory: infra-tr
         run: terraform apply -auto-approve
 
-      - name: Output SQS Queue URL
-        id: output_sqs
-        working-directory: infra-tr
-        run: |
-          sqs_url=$(terraform output -raw sqs_queue_url)
-          echo "sqs_url=$sqs_url" >> $GITHUB_ENV
-
       - name: Test SQS Queue
         if: github.ref == 'refs/heads/main'
         run: |
