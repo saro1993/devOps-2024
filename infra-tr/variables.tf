@@ -5,7 +5,7 @@ variable "student_id" {
 
 variable "student_email" {
   type    = string
-  default = "sarosamall1993@gmail.com"  
+  default = "sarosamall@yahoo.com"  
 }
 
 variable "region" {
@@ -16,4 +16,17 @@ variable "region" {
 variable "name_prefix" {
   type    = string
   default = "fargate-basic"
+}
+
+variable "alarm_email" {
+  type = string
+}
+
+variable "threshold" {
+  default = 300
+  type = number
+}
+
+variable "sqs_queue_name" {
+  default = "image_processing_queue"
 }
