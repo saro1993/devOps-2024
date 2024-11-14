@@ -9,7 +9,7 @@ terraform.tfstate.backup
 __pycache__/
 *.py[cod]
 
-# ZIP og binære filer
+# ZIP og binære filer.
 *.zip
 
 # Binærfiler for Terraform
