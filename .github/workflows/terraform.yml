@@ -28,6 +28,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
+      - name: Create Lambda Zip Archive
+        run: |
+          cd infra-tr
+          if [ ! -f "lambda_sqs.zip" ]; then
+            echo "lambda_sqs.zip not found. Creating archive..."
+            zip lambda_sqs.zip ../lambda_sqs.py
+          fi
+
       - name: Initialize Terraform
         working-directory: infra-tr
         run: terraform init
@@ -47,7 +55,7 @@ jobs:
         working-directory: infra-tr
         run: |
           sqs_url=$(terraform output -raw sqs_queue_url)
-          echo "sqs_url=$sqs_url" >> $GITHUB_ENV  # Setter miljøvariabelen for senere bruk i test
+          echo "sqs_url=$sqs_url" >> $GITHUB_ENV
 
       - name: Test SQS Queue
         if: github.ref == 'refs/heads/main'
