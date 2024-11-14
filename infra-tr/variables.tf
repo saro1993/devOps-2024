@@ -20,6 +20,7 @@ variable "name_prefix" {
 
 variable "alarm_email" {
   type = string
+  default = "sarosamall@yahoo.com"
 }
 
 variable "threshold" {
