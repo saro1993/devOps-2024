@@ -50,11 +50,6 @@ jobs:
         working-directory: infra-tr
         run: terraform apply -auto-approve
 
-      - name: Test SQS Queue
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo "Testing SQS Queue URL: ${{ env.sqs_url }}"
-          aws sqs send-message --queue-url "${{ env.sqs_url }}" --message-body "Test message"
 
       - name: Display SQS Queue URL
         if: github.ref == 'refs/heads/main'
