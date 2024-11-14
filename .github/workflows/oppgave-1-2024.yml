@@ -1,4 +1,4 @@
-name: Deploy SAM Application
+name: Deploy and Test SAM Application
 
 on:
   push:
@@ -6,12 +6,12 @@ on:
       - main
 
 jobs:
-  deploy:
+  deploy-and-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -19,34 +19,38 @@ jobs:
           python-version: '3.8'
 
       - name: Install AWS SAM CLI
-        run: |
-          pip install aws-sam-cli
+        run: pip install aws-sam-cli
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      - name: Check Required Files
-        run: |
-          if [ ! -d "oppgave-1-2024" ]; then
-            echo "Required directory oppgave-1-2024 is missing!"
-            exit 1
-          fi
-          if [ ! -f "oppgave-1-2024/template.yaml" ]; then
-            echo "Required template.yaml file is missing in oppgave-1-2024 directory!"
-            exit 1
-          fi
-
       - name: Deploy SAM Application
-        working-directory: oppgave-1-2024
         run: |
           sam build
           sam deploy --no-confirm-changeset --stack-name oppgave-1-2024 --capabilities CAPABILITY_IAM
 
-      - name: Confirm Deployment Success
+      - name: Fetch API URL from CloudFormation Output
+        id: api_url
         run: |
-          aws cloudformation describe-stacks --stack-name oppgave-1-2024 --region eu-west-1 \
-          | grep -q '"StackStatus": "CREATE_COMPLETE"' || (echo "Stack creation failed" && exit 1)
+          api_url=$(aws cloudformation describe-stacks --stack-name oppgave-1-2024 \
+            --query "Stacks[0].Outputs[?OutputKey=='ImageApi'].OutputValue" --output text)
+          echo "API_URL=$api_url" >> $GITHUB_ENV
+
+      - name: Test API Endpoint
+        env:
+          API_URL: ${{ env.API_URL }}
+        run: |
+          response=$(curl -X POST "$API_URL/image-generate/" \
+            -H "Content-Type: application/json" \
+            -d '{"prompt": "Test image generation"}')
+          echo "API Response: $response"
+          if echo "$response" | grep -q "image_url"; then
+            echo "API test passed."
+          else
+            echo "API test failed."
+            exit 1
+          fi
