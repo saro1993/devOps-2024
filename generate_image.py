@@ -3,7 +3,7 @@ import boto3
 import json
 import random
 
-# Set up the AWS clients..
+# Set up the AWS clients.
 
 bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
 s3_client = boto3.client("s3")
@@ -12,7 +12,7 @@ s3_client = boto3.client("s3")
 model_id = "amazon.titan-image-generator-v1"
 bucket_name = "pgr301-couch-explorers"
 
-# Frank; Important; Change this prompt to something else before the presentation with the investors!
+# Frank; Important; Change this prompt to something else before the presentation with the investors!!
 prompt = "Investors, with circus hats, giving money to developers with large smiles"
 
 seed = random.randint(0, 2147483647)
