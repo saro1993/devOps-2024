@@ -3,14 +3,14 @@ name: Deploy Terraform Infrastructure
 on:
   push:
     branches:
-      - main  
-      - '**'  
+      - main
+      - '**'
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
     env:
-      TF_VAR_region: eu-west-1  
+      TF_VAR_region: eu-west-1
 
     steps:
       - name: Checkout code
@@ -30,13 +30,11 @@ jobs:
 
       - name: Create Lambda Zip Archive
         run: |
-          cd infra-tr
-          if [ ! -f "lambda_sqs.zip" ]; then
+          if [ ! -f "infra-tr/lambda_sqs.zip" ]; then
             echo "lambda_sqs.zip not found. Creating archive..."
-            zip lambda_sqs.zip ../lambda_sqs.py
+            cd infra-tr && zip lambda_sqs.zip ../lambda_sqs.py
           fi
-
-      - name: Initialize Terraform
+      - name: Terraform Init
         working-directory: infra-tr
         run: terraform init
 
@@ -49,21 +47,3 @@ jobs:
         if: github.ref == 'refs/heads/main'
         working-directory: infra-tr
         run: terraform apply -auto-approve
-
-      - name: Output SQS Queue URL
-        id: output_sqs
-        working-directory: infra-tr
-        run: |
-          sqs_url=$(terraform output -raw sqs_queue_url)
-          echo "sqs_url=$sqs_url" >> $GITHUB_ENV  # Setter miljøvariabel for senere bruk
-
-      - name: Test SQS Queue
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo "Testing SQS Queue URL: ${{ env.sqs_url }}"
-          aws sqs send-message --queue-url "${{ env.sqs_url }}" --message-body "Test message"
-
-      - name: Display SQS Queue URL
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo "Your SQS Queue URL is: ${{ env.sqs_url }}"
