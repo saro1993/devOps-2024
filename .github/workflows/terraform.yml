@@ -55,15 +55,15 @@ jobs:
         working-directory: infra-tr
         run: |
           sqs_url=$(terraform output -raw sqs_queue_url)
-          echo "::set-output name=sqs_url::$sqs_url"
+          echo "sqs_url=$sqs_url" >> $GITHUB_ENV  # Setter miljøvariabel for senere bruk
 
       - name: Test SQS Queue
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "Testing SQS Queue URL: ${{ steps.output_sqs.outputs.sqs_url }}"
-          aws sqs send-message --queue-url "${{ steps.output_sqs.outputs.sqs_url }}" --message-body "Test message"
+          echo "Testing SQS Queue URL: ${{ env.sqs_url }}"
+          aws sqs send-message --queue-url "${{ env.sqs_url }}" --message-body "Test message"
 
       - name: Display SQS Queue URL
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "Your SQS Queue URL is: ${{ steps.output_sqs.outputs.sqs_url }}"
+          echo "Your SQS Queue URL is: ${{ env.sqs_url }}"
