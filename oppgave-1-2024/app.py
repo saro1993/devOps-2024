@@ -11,7 +11,7 @@ s3_client = boto3.client("s3")
 # Environment variables for dynamic configuration
 model_id = "amazon.titan-image-generator-v1"
 bucket_name = os.environ.get("BUCKET_NAME")  
-candidate_number = os.environ.get("CANDIDATE_NUMBER", "default_candidate") 
+candidate_number = os.environ.get("CANDIDATE_NUMBER", default="101") 
 
 #lambda function to handel event
 def lambda_handler(event, context):

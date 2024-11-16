@@ -27,7 +27,8 @@ Resources:
         - x86_64
       Environment:
         Variables:
-          BUCKET_NAME: "saro-2024"
+          BUCKET_NAME: "pgr301-couch-explorers"
+          CANDIDATE_NUMBER: "101"
       Policies:
         - Statement:
             - Effect: Allow
@@ -37,7 +38,7 @@ Resources:
               Action:
                 - "s3:PutObject"
                 - "s3:GetObject"
-              Resource: "arn:aws:s3:::saro-2024/*"
+              Resource: "arn:aws:s3:::pgr301-couch-explorers/*"
       Events:
         ApiGateway:
           Type: Api

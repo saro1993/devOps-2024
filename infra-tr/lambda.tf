@@ -13,7 +13,7 @@ resource "aws_lambda_function" "image_processor_lambda" {
 
   environment {
     variables = {
-      BUCKET_NAME       = "pgr301-couch-explorers"
+      BUCKET_NAME       = "pgr301-couch-explorers-2024"
       QUEUE_URL         = aws_sqs_queue.image_queue.id
       CANDIDATE_NUMBER  = "101"
     }
