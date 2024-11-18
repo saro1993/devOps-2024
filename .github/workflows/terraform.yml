@@ -37,22 +37,22 @@ jobs:
           fi
 
       - name: Initialize Terraform
-        working-directory: infra-tr/sqs
+        working-directory: infra-tr
         run: terraform init
 
       - name: Terraform Plan
         if: github.ref != 'refs/heads/main'
-        working-directory: infra-tr/sqs
+        working-directory: infra-tr
         run: terraform plan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        working-directory: infra-tr/sqs
+        working-directory: infra-tr
         run: terraform apply -auto-approve
 
       - name: Output SQS Queue URL
         id: output_sqs
-        working-directory: infra-tr/sqs
+        working-directory: infra-tr
         run: |
           sqs_url=$(terraform output -raw sqs_queue_url)
           echo "sqs_url=$sqs_url" >> $GITHUB_ENV  # Setter miljøvariabel for senere bruk
