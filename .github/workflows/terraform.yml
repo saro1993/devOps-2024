@@ -3,27 +3,24 @@ name: Deploy Terraform Infrastructure
 on:
   push:
     branches:
-      - main
-      - '**'
+      - main  
+      - '**'  
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
     env:
-      TF_VAR_region: eu-west-1
+      TF_VAR_region: eu-west-1  
 
     steps:
-      # Sjekk ut koden fra GitHub-repositoriet
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Sett opp Terraform CLI
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.9.8
 
-      # Konfigurer AWS-legitimasjon
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -31,27 +28,42 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      # Opprett ZIP-arkivet for Lambda (hvis det ikke eksisterer)
       - name: Create Lambda Zip Archive
         run: |
-          if [ ! -f "infra-tr/lambda_sqs.zip" ]; then
+          cd infra-tr
+          if [ ! -f "lambda_sqs.zip" ]; then
             echo "lambda_sqs.zip not found. Creating archive..."
-            cd infra-tr && zip lambda_sqs.zip ../lambda_sqs.py
+            zip lambda_sqs.zip ../lambda_sqs.py
           fi
 
-      # Initialiser Terraform for å laste ned nødvendige moduler og oppsett
-      - name: Terraform Init
-        working-directory: infra-tr
+      - name: Initialize Terraform
+        working-directory: infra-tr/sqs
         run: terraform init
 
-      # Kjør Terraform Plan for å vise hva som skal endres
       - name: Terraform Plan
         if: github.ref != 'refs/heads/main'
-        working-directory: infra-tr
+        working-directory: infra-tr/sqs
         run: terraform plan
 
-      # Kjør Terraform Apply for å utføre endringene på main branch
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         working-directory: infra-tr
         run: terraform apply -auto-approve
+
+      - name: Output SQS Queue URL
+        id: output_sqs
+        working-directory: infra-tr/sqs
+        run: |
+          sqs_url=$(terraform output -raw sqs_queue_url)
+          echo "sqs_url=$sqs_url" >> $GITHUB_ENV  # Setter miljøvariabel for senere bruk
+
+      - name: Test SQS Queue
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Testing SQS Queue URL: ${{ env.sqs_url }}"
+          aws sqs send-message --queue-url "${{ env.sqs_url }}" --message-body "Test message"
+
+      - name: Display SQS Queue URL
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Your SQS Queue URL is: ${{ env.sqs_url }}"
