@@ -26,11 +26,11 @@ jobs:
           aws-region: eu-west-1
 
       - name: Initialize Terraform
-        working-directory: ./infra
+        working-directory: ./infra-tr
         run: terraform init
 
       - name: Apply Terraform and Get Outputs
-        working-directory: ./infra
+        working-directory: ./infra-tr
         run: |
           terraform apply -auto-approve
           echo "SQS_QUEUE_URL=$(terraform output -raw sqs_queue_url)" >> $GITHUB_ENV
