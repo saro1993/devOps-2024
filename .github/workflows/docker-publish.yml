@@ -6,37 +6,46 @@ on:
       - main
 
 jobs:
-  build-and-publish:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      # Sjekker ut repository
       - name: Check out the repository
         uses: actions/checkout@v2
 
-      # Terraform for å hente SQS URL
       - name: Initialize and Apply Terraform
         working-directory: ./infra-tr
         run: |
           terraform init
           terraform apply -auto-approve
           echo "SQS_QUEUE_URL=$(terraform output -raw sqs_queue_url)" >> $GITHUB_ENV
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Logg inn på Docker Hub
+      - name: Debug Terraform Output
+        run: |
+          echo "SQS_QUEUE_URL: ${{ env.SQS_QUEUE_URL }}"
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      # Bygge og publisere Docker-image
+      - name: Verify Dockerfile exists
+        run: |
+          if [ ! -f ./java_sqs_client/Dockerfile ]; then
+            echo "Error: Dockerfile not found in ./java_sqs_client"
+            exit 1
+          fi
+
       - name: Build and Push Docker Image
         working-directory: ./java_sqs_client
         run: |
           docker build -t sarosamall/sqs-client .
           docker push sarosamall/sqs-client
 
-      # Test Docker-image med SQS URL
       - name: Test Docker Image
         run: |
           docker run \
@@ -44,3 +53,6 @@ jobs:
             -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             -e SQS_QUEUE_URL=${{ env.SQS_QUEUE_URL }} \
             sarosamall/sqs-client "Test Message"
+
+      - name: Validate SQS Queue
+        run: aws sqs get-queue-attributes --queue-url ${{ env.SQS_QUEUE_URL }} --attribute-names All
