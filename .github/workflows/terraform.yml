@@ -30,11 +30,14 @@ jobs:
 
       - name: Create Lambda Zip Archive
         run: |
-          cd infra-tr
+          cd infra-tr/sqs
           if [ ! -f "lambda_sqs.zip" ]; then
             echo "lambda_sqs.zip not found. Creating archive..."
             zip lambda_sqs.zip ../lambda_sqs.py
+          else
+            echo "lambda_sqs.zip already exists."
           fi
+
 
       - name: Initialize Terraform
         working-directory: infra-tr/sqs
