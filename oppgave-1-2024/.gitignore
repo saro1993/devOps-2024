@@ -256,6 +256,7 @@ __pycache__/
 # ZIP og binære filer
 *.zip
 
+
 # Binærfiler for Terraform
 terraform_*.zip
 

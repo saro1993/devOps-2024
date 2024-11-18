@@ -13,14 +13,17 @@ jobs:
       TF_VAR_region: eu-west-1
 
     steps:
+      # Sjekk ut koden fra GitHub-repositoriet
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Sett opp Terraform CLI
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.9.8
 
+      # Konfigurer AWS-legitimasjon
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -28,21 +31,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
+      # Opprett ZIP-arkivet for Lambda (hvis det ikke eksisterer)
       - name: Create Lambda Zip Archive
         run: |
           if [ ! -f "infra-tr/lambda_sqs.zip" ]; then
             echo "lambda_sqs.zip not found. Creating archive..."
             cd infra-tr && zip lambda_sqs.zip ../lambda_sqs.py
           fi
+
+      # Initialiser Terraform for å laste ned nødvendige moduler og oppsett
       - name: Terraform Init
         working-directory: infra-tr
         run: terraform init
 
+      # Kjør Terraform Plan for å vise hva som skal endres
       - name: Terraform Plan
         if: github.ref != 'refs/heads/main'
         working-directory: infra-tr
         run: terraform plan
 
+      # Kjør Terraform Apply for å utføre endringene på main branch
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         working-directory: infra-tr
