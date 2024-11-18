@@ -7,7 +7,7 @@ output "lambda_function_arn" {
 }
 
 output "sqs_queue_url" {
-  value = aws_sqs_queue.image_queue.id
+  value = aws_sqs_queue.image_queue.url
 }
 output "iam_student_user_name" {
   value = aws_iam_user.student.name

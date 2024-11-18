@@ -18,10 +18,6 @@ provider "aws" {
   region = var.region
 }
 
-
-
-
-
 resource "aws_sns_topic" "alarm_topic" {
   name = "${var.sqs_queue_name}-alarm-topic"
 }
