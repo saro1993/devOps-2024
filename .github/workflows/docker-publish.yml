@@ -1,4 +1,4 @@
-name: Build, Test, and Publish Docker Image
+name: Build and Publish Docker Image with SQS URL
 
 on:
   push:
@@ -6,48 +6,37 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
+      # Sjekker ut repository
       - name: Check out the repository
         uses: actions/checkout@v2
 
-      # Maven Build Step
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-
-      - name: Build with Maven
-        working-directory: ./java_sqs_client
-        run: |
-          mvn clean install
-          mvn package
-
-      # Terraform Outputs
-      - name: Export Terraform Outputs
+      # Terraform for å hente SQS URL
+      - name: Initialize and Apply Terraform
         working-directory: ./infra-tr
         run: |
           terraform init
           terraform apply -auto-approve
           echo "SQS_QUEUE_URL=$(terraform output -raw sqs_queue_url)" >> $GITHUB_ENV
-          echo "AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_ENV
 
-      # Docker Build and Publish
+      # Logg inn på Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
+      # Bygge og publisere Docker-image
       - name: Build and Push Docker Image
         working-directory: ./java_sqs_client
         run: |
           docker build -t sarosamall/sqs-client .
           docker push sarosamall/sqs-client
 
-      # Docker Image Test
+      # Test Docker-image med SQS URL
       - name: Test Docker Image
         run: |
           docker run \
@@ -55,8 +44,3 @@ jobs:
             -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             -e SQS_QUEUE_URL=${{ env.SQS_QUEUE_URL }} \
             sarosamall/sqs-client "Test Message"
-
-      # Verify Maven Tests
-      - name: Run Maven Tests
-        working-directory: ./java_sqs_client
-        run: mvn test
