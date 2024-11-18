@@ -30,7 +30,7 @@ jobs:
 
       - name: Create Lambda Zip Archive
         run: |
-          cd infra-tr/sqs
+          cd infra-tr
           if [ ! -f "lambda_sqs.zip" ]; then
             echo "lambda_sqs.zip not found. Creating archive..."
             zip lambda_sqs.zip ../lambda_sqs.py
