@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image
+name: Build, Publish, and Test Docker Image
 
 on:
   push:
@@ -6,8 +6,10 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-publish-test:
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_region: eu-west-1
 
     steps:
       - name: Check out the repository
@@ -55,8 +57,14 @@ jobs:
 
       - name: Test Docker Image
         run: |
+          echo "Running Docker Image with SQS and AWS credentials"
           docker run \
             -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
             -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             -e SQS_QUEUE_URL=${{ env.SQS_QUEUE_URL }} \
             sarosamall/sqs-client "Your prompt here"
+
+      - name: Confirm Docker Image Published
+        run: |
+          echo "Docker Image successfully pushed to Docker Hub:"
+          echo "https://hub.docker.com/r/sarosamall/sqs-client"
