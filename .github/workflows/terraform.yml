@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main  
-      - '**'  
+      - '**'
 
 jobs:
   terraform:
@@ -50,21 +50,15 @@ jobs:
         working-directory: infra-tr
         run: terraform apply -auto-approve
 
-      - name: Fetch AWS Account ID
-        id: fetch_account_id
-        run: |
-          export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
-
       - name: Fetch SQS Queue URL
         id: fetch_sqs_url
         working-directory: infra-tr
         run: |
-          sqs_url=$(terraform output -raw sqs_queue_url)
+          sqs_url=$(terraform output -raw sqs_queue_url 2>/dev/null | tr -d '\n')
+          echo "SQS_QUEUE_URL=$sqs_url"
           echo "SQS_QUEUE_URL=$sqs_url" >> $GITHUB_ENV
 
       - name: Display SQS Queue URL
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "Your AWS Account ID is: ${{ env.AWS_ACCOUNT_ID }}"
           echo "Your SQS Queue URL is: ${{ env.SQS_QUEUE_URL }}"
