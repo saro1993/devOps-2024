@@ -30,7 +30,7 @@ jobs:
 
       - name: Create Lambda Zip Archive
         run: |
-          cd infra-tr
+          cd infra-tr/sqs
           if [ ! -f "lambda_sqs.zip" ]; then
             echo "lambda_sqs.zip not found. Creating archive..."
             zip lambda_sqs.zip ../lambda_sqs.py
@@ -47,7 +47,7 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        working-directory: infra-tr
+        working-directory: infra-tr/sqs
         run: terraform apply -auto-approve
 
       - name: Output SQS Queue URL
