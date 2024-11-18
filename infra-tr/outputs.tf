@@ -13,6 +13,3 @@ output "iam_student_user_name" {
   value = aws_iam_user.student.name
   description = "Navnet på IAM-brukeren som ble opprettet"
 }
-output "module_path" {
-  value = "${path.module}"
-}

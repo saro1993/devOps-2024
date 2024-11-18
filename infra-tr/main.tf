@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 1.9"
   backend "s3" {
     bucket = "pgr301-couch-explorers"
-    key    = "infra/sqs/terraform.tfstate"
+    key    = "infra-tr/terraform.tfstate"
     region = "eu-west-1"
   }
 
