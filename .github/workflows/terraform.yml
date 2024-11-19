@@ -61,4 +61,4 @@ jobs:
       - name: Display SQS Queue URL
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "Your SQS Queue URL is: ${{ env.SQS_QUEUE_URL }}"
+          echo "Your SQS Queue URL is  ----->     : ${{ env.SQS_QUEUE_URL }}"

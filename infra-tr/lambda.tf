@@ -51,7 +51,7 @@ resource "aws_lambda_function" "image_processor_lambda" {
     variables = {
       BUCKET_NAME       = "pgr301-couch-explorers"
       QUEUE_URL         = aws_sqs_queue.image_queue.url
-      CANDIDATE_NUMBER  = "101"
+      CANDIDATE_NUMBER  = var.student_id
     }
   }
 }
