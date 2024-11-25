@@ -23,6 +23,20 @@ GitHub-repositoriet for prosjektet ligger tilgjengelig her: [GitHub Repository](
   ```
 
 ## Oppgave 2: API og SQS-kø Konfigurasjon
+DevOps-2024 Infrastructure Deployment
+Lenker til kjørte GitHub Actions workflows
+
+1. Lenke til vellykket kjøring av workflow (terraform apply på main)
+Dette er workflowen der infrastrukturkoden ble deployet ved bruk av terraform apply etter en push til main.
+
+#Workflow-logg:
+https://github.com/saro1993/devOps-2024/actions/runs/12020410819
+2. Lenke til vellykket kjøring av workflow (terraform plan på en annen gren)
+Dette er workflowen som genererte en plan (terraform plan) for kommende endringer, kjørt på en annen gren enn main.
+
+#Workflow-logg:
+https://github.com/saro1993/devOps-2024/actions/runs/12020451283
+
 
 ### SQS Kø URL og Test
 - **SQS-kø URL**: `https://sqs.eu-west-1.amazonaws.com/244530008913/image_processing_queue`
