@@ -43,7 +43,7 @@ def lambda_handler(event, context):
         base64_image_data = model_response["images"][0]
         image_data = base64.b64decode(base64_image_data)
 
-        # Upload the image to S3
+        # Upload the image to S3...
         s3_client.put_object(Bucket=BUCKET_NAME, Key=s3_image_path, Body=image_data)
 
     return {
