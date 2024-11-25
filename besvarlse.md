@@ -158,7 +158,6 @@ I denne oppgaven ser vi nærmere på hvordan disse arkitekturene påvirker sentr
 - Vil vi ha full kontroll over infrastrukturen? **Velg mikrotjenester.**
 
 
-
 ### Kilder
 - [Prometheus](https://prometheus.io/docs/introduction/overview/)
 - [Grafana](https://grafana.com/docs/grafana-cloud/)
