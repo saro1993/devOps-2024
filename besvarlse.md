@@ -144,7 +144,7 @@ I denne oppgaven ser vi nærmere på hvordan disse arkitekturene påvirker sentr
 - **Fordeler:**
   - Teamet har full kontroll over hele systemet, fra infrastruktur til applikasjonens ytelse.
 - **Ulemper:**
-  - Krever mer teknisk kompetanse og ansvar. Teamet må selv sikre at alt fungerer som det skal.
+  - Krever mer teknisk kompetanse og ansvar. Teamet (vi) må selv sikre at alt fungerer som det skal.
 
 ---
 
@@ -156,6 +156,7 @@ I denne oppgaven ser vi nærmere på hvordan disse arkitekturene påvirker sentr
 **Hva bør du velge?**
 - Vil vi fokusere på utvikling og la leverandøren håndtere driften? **Velg serverless.**
 - Vil vi ha full kontroll over infrastrukturen? **Velg mikrotjenester.**
+
 
 
 ### Kilder
