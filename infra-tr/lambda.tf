@@ -30,7 +30,9 @@ resource "aws_iam_role_policy" "lambda_execution_policy" {
           "sqs:DeleteMessage",
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents"
+          "logs:PutLogEvents", 
+          "sqs:GetQueueAttributes",
+          
         ]
         Resource = "*"
       }
